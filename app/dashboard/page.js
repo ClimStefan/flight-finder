@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '../../lib/supabase';
 import Link from 'next/link';
-import FlightResults from '../../components/FlightResuls';
-import SearchFlightsButton from '@/components/SearchFlightsButton';
+import FlightResults from '../../components/FlightResults';
+import SearchFlightsButton from '../../components/SearchFlightsButton';
 import GetUserIdClient from '../../components/GetUserIdClient';
 // =====================================================
 // Fetch user's preferences from database

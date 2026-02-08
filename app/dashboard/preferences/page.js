@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
-import { createServerClient } from '@/lib/supabase';
-import PreferencesForm from '@/components/PreferencesForm';
-import GetUserIdClient from '@/components/GetUserIdClient';
+import { createServerClient } from '../../../lib/supabase';
+import PreferencesForm from '../../../components/PreferencesForm';
+import GetUserIdClient from '../../../components/GetUserIdClient';
 
 async function getUserPreferences(userId) {
   const supabase = createServerClient();
