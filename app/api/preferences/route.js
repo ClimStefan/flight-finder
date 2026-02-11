@@ -11,9 +11,11 @@ import { createServerClient } from '../../../lib/supabase';
 
 export async function POST(request) {
   try {
-    // Get userId from request body (no auth needed)
     const body = await request.json();
+    console.log('Received body:', body); // Add this
+    
     const userId = body.userId;
+    console.log('UserId:', userId); // Add this
     
     if (!userId) {
       return NextResponse.json(

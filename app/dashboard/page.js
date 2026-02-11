@@ -4,6 +4,9 @@ import Link from 'next/link';
 import FlightResults from '../../components/FlightResults';
 import SearchFlightsButton from '../../components/SearchFlightsButton';
 import GetUserIdClient from '../../components/GetUserIdClient';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 // =====================================================
 // Fetch user's preferences from database
 // =====================================================
@@ -30,7 +33,7 @@ async function getUserPreferences(userId) {
 async function getRecentFlights(userId, maxBudget) {
   const supabase = createServerClient();
   
-  const { data, error } = await supabase
+  let query = supabase
     .from('flight_results')
     .select(`
       *,
@@ -40,9 +43,15 @@ async function getRecentFlights(userId, maxBudget) {
         return_date
       )
     `)
-    .eq('user_id', userId)
-    .lte('price_cents', maxBudget) // Only show flights under budget
-    .order('price_cents', { ascending: true }) // Show cheapest first
+    .eq('user_id', userId);
+  
+  // Only filter by budget if it's defined
+  if (maxBudget) {
+    query = query.lte('price_cents', maxBudget);
+  }
+  
+  const { data, error } = await query
+    .order('price_cents', { ascending: true })
     .limit(50);
   
   if (error) {
@@ -66,8 +75,13 @@ export default async function DashboardPage({ searchParams }) {
   }
   
   // Fetch user data
-  const preferences = await getUserPreferences(userId);
-  const flights = await getRecentFlights(userId, preferences?.max_price_round_trip);
+   const preferences = await getUserPreferences(userId);
+  
+  // Only fetch flights if preferences exist and have a budget
+  let flights = [];
+  if (preferences && preferences.max_price_round_trip) {
+    flights = await getRecentFlights(userId, preferences.max_price_round_trip);
+  }
   // If no preferences set, show onboarding
   if (!preferences) {
     return (
@@ -78,8 +92,8 @@ export default async function DashboardPage({ searchParams }) {
         <p className="text-xl text-gray-600 mb-8">
           Let's set up your travel preferences so we can start finding you amazing deals.
         </p>
-        <Link 
-          href="/dashboard/preferences" 
+       <Link 
+          href={`/dashboard/preferences?userId=${userId}`}
           className="btn-primary text-lg px-8 py-3 inline-block"
         >
           Set Up Preferences
@@ -174,13 +188,10 @@ export default async function DashboardPage({ searchParams }) {
       </div>
       <Link 
   href="/waitlist" 
-  className="btn-secondary text-lg px-8 py-3 inline-block"
+  className="btn-secondary bg-green text-lg px-8 py-3 inline-block"
 >
   Join Waitlist
 </Link>
     </div>
   );
 }
-
-// This page uses server-side rendering
-export const dynamic = 'force-dynamic';

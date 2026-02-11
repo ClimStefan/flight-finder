@@ -63,6 +63,7 @@ const DAYS_OF_WEEK = [
 ];
 
 export default function PreferencesForm({ userId, initialData }) {
+   console.log('PreferencesForm userId:', userId);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -154,13 +155,12 @@ export default function PreferencesForm({ userId, initialData }) {
         throw new Error(data.error || 'Failed to save preferences');
       }
       
-      setSuccess('Preferences saved successfully! Redirecting to dashboard...');
+     setSuccess('Preferences saved successfully!');
       
-      // Redirect to dashboard after short delay
+      // Wait a moment for user to see success message, then redirect
       setTimeout(() => {
-        router.push('/dashboard');
-        router.refresh();
-      }, 1500);
+        window.location.href = `/dashboard?userId=${userId}`;
+      }, 1000);
       
     } catch (err) {
       setError(err.message);

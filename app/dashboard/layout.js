@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function DashboardLayout({ children }) {
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('userId');
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
@@ -15,13 +21,13 @@ export default function DashboardLayout({ children }) {
             {/* Navigation Links */}
             <div className="flex items-center gap-6">
               <Link 
-                href="/dashboard" 
+                href={userId ? `/dashboard?userId=${userId}` : '/dashboard'}
                 className="text-gray-600 hover:text-gray-900"
               >
                 Dashboard
               </Link>
               <Link 
-                href="/dashboard/preferences" 
+                href={userId ? `/dashboard/preferences?userId=${userId}` : '/dashboard/preferences'}
                 className="text-gray-600 hover:text-gray-900"
               >
                 Preferences
